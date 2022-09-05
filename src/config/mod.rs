@@ -1,10 +1,12 @@
-use std::io::Write;
-
 // todo!(Alexander): Add serde to read and serialize Config struct
+
+use std::io::Write;
 
 #[derive(Default)]
 pub struct Config {
     pub file_types: Vec<String>,
+    pub display: bool,
+    pub watch: bool,
 }
 
 pub fn read_config() -> Config {

@@ -1,17 +1,11 @@
+use std::env;
 use std::str::FromStr;
-use std::{env, thread, time};
 
 mod actions;
 mod config;
 mod parser;
 mod render;
 mod watcher;
-
-#[derive(Default)]
-struct MainOptions {
-    watch: bool,
-    display: bool,
-}
 
 fn read_input() -> String {
     let mut buffer = String::new();
@@ -21,55 +15,61 @@ fn read_input() -> String {
     buffer.trim().to_string()
 }
 
-fn parse_args(args: Vec<String>) -> MainOptions {
+fn parse_args(args: Vec<String>) -> config::Config {
     // Construct options struct
-    let mut main_opts = MainOptions::default();
 
-    let conf = config::read_config();
+    let mut conf = config::read_config();
 
     // Check if flag in args
     if args.contains(&"--watch".to_string()) {
-        main_opts.watch = true;
+        conf.watch = true;
     }
     // Write config flags to config file
+    // Could be cleaner if display option is in Config instead of MainOptions
     if args.contains(&"--display".to_string()) {
-        main_opts.display = true;
+        todo!("Implement config write")
     }
-    if args.contains(&"--nodisplay".to_string()) {
-        main_opts.display = false;
+    if args.contains(&"--no-display".to_string()) {
+        todo!("Implement config write")
     }
-    main_opts
+    conf
 }
 
-fn run(options: MainOptions) {
+fn run_cli_mode() {
     // Read configuration
-    // let conf = config::read_config();  // Uncomment when implemented
-    match options.watch {
+    let conf = config::read_config();
+
+    loop {
+        // parse files in watched dirs
+        // parser::parse(&conf.file_types);  // Uncomment when implemented
+
+        // Get user input
+        let acts = actions::Action::from_str(read_input().as_str());
+
+        // Match Result to run action on Ok
+        match acts {
+            Ok(a) => actions::actions(&a, &conf),
+            Err(e) => eprintln!("Could not perform action due to: {}", e),
+        }
+    }
+}
+
+fn run(conf: config::Config) {
+    // Either run in watch or CLI mode
+    match conf.watch {
         // Running in watch mode - requires configs to be set to liking beforehand
         true => loop {
             println!("Running in unimplemented watch mode");
-            thread::sleep(time::Duration::from_millis(1000))
+            println!("Exiting application.");
+            std::process::exit(1);
         },
         // Running in CLI-mode
-        false => loop {
-            // parser::parse(&conf.file_types);
-            let acts = actions::Actions::from_str(read_input().as_str());
-            match acts {
-                Ok(a) => {
-                    actions::actions(&a);
-                    if a == actions::Actions::Render {
-                        match options.display {
-                            true => actions::actions(&actions::Actions::Display),
-                            false => {}
-                        }
-                    }
-                }
-                Err(e) => eprintln!("Could not perform action due to: {}", e),
-            }
-        },
+        false => run_cli_mode(),
     }
 }
 
 fn main() {
-    run(parse_args(env::args().skip(1).collect())) // Input arguments))
+    run(parse_args(
+        env::args().skip(1).collect(), // Input arguments
+    ))
 }
