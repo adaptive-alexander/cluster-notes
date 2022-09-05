@@ -1,8 +1,8 @@
-use crate::actions::{actions, Actions};
 use std::str::FromStr;
 use std::{env, thread, time};
 
 mod actions;
+mod config;
 mod parser;
 mod render;
 mod watcher;
@@ -25,10 +25,13 @@ fn parse_args(args: Vec<String>) -> MainOptions {
     // Construct options struct
     let mut main_opts = MainOptions::default();
 
+    let conf = config::read_config();
+
     // Check if flag in args
     if args.contains(&"--watch".to_string()) {
         main_opts.watch = true;
     }
+    // Write config flags to config file
     if args.contains(&"--display".to_string()) {
         main_opts.display = true;
     }
@@ -39,19 +42,24 @@ fn parse_args(args: Vec<String>) -> MainOptions {
 }
 
 fn run(options: MainOptions) {
+    // Read configuration
+    // let conf = config::read_config();  // Uncomment when implemented
     match options.watch {
+        // Running in watch mode - requires configs to be set to liking beforehand
         true => loop {
             println!("Running in unimplemented watch mode");
             thread::sleep(time::Duration::from_millis(1000))
         },
+        // Running in CLI-mode
         false => loop {
-            let acts = Actions::from_str(read_input().as_str());
+            // parser::parse(&conf.file_types);
+            let acts = actions::Actions::from_str(read_input().as_str());
             match acts {
                 Ok(a) => {
-                    actions(&a);
-                    if a == Actions::Render {
+                    actions::actions(&a);
+                    if a == actions::Actions::Render {
                         match options.display {
-                            true => actions(Actions::Display),
+                            true => actions::actions(&actions::Actions::Display),
                             false => {}
                         }
                     }
@@ -63,5 +71,5 @@ fn run(options: MainOptions) {
 }
 
 fn main() {
-    run(parse_args(env::args().skip(1).collect()));
+    run(parse_args(env::args().skip(1).collect())) // Input arguments))
 }

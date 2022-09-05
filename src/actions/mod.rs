@@ -29,6 +29,7 @@ impl FromStr for Actions {
         match s.to_lowercase().as_str() {
             "config" => Ok(Actions::Config),
             "render" => Ok(Actions::Render),
+            "display" => Ok(Actions::Display),
             _ => Err(ActionError {
                 message: format!("\"{}\"", s),
             }),

@@ -8,6 +8,6 @@ Obsidian, with intended future support of different file formats.
 The program has the following components:
 - A watcher for folders set by the user which looks for changes in notes.
 - A file parser looking for linked tags and changes.
-- A renderer that produces initially a 2d image, but later a 3d object.
+- A renderer that produces initially a 2d image, but later a 3d object (gpu bound).
 - An actions module to tie the pieces together.
 - A main module that parses args and configs as well as the run loop.

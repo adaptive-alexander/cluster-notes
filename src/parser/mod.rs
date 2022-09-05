@@ -1,7 +1,11 @@
-pub fn parse_md() {
+pub fn parse(file_types: &Vec<String>) {
     todo!()
 }
 
-pub fn parse_ipynb() {
+fn parse_md() {
+    todo!()
+}
+
+fn parse_ipynb() {
     todo!()
 }
