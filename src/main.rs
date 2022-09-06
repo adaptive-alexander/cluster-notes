@@ -16,29 +16,20 @@ fn read_input() -> String {
 }
 
 fn parse_args(args: Vec<String>) -> config::Config {
-    // Construct options struct
-
-    let mut conf = config::read_config();
+    // Construct Config struct from config.yml
+    let mut conf = config::read_config().unwrap();
 
     // Check if flag in args
     if args.contains(&"--watch".to_string()) {
         conf.watch = true;
     }
-    // Write config flags to config file
-    // Could be cleaner if display option is in Config instead of MainOptions
     if args.contains(&"--display".to_string()) {
-        todo!("Implement config write")
-    }
-    if args.contains(&"--no-display".to_string()) {
-        todo!("Implement config write")
+        conf.display = true;
     }
     conf
 }
 
-fn run_cli_mode() {
-    // Read configuration
-    let conf = config::read_config();
-
+fn run_cli_mode(conf: config::Config) {
     loop {
         // parse files in watched dirs
         // parser::parse(&conf.file_types);  // Uncomment when implemented
@@ -64,7 +55,7 @@ fn run(conf: config::Config) {
             std::process::exit(1);
         },
         // Running in CLI-mode
-        false => run_cli_mode(),
+        false => run_cli_mode(conf),
     }
 }
 

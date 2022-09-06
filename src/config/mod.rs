@@ -1,16 +1,22 @@
-// todo!(Alexander): Add serde to read and serialize Config struct
-
+use serde::{Deserialize, Serialize};
+use std::fs;
 use std::io::Write;
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub struct Config {
+    #[serde(default)]
     pub file_types: Vec<String>,
+    #[serde(default)]
     pub display: bool,
+    #[serde(default)]
     pub watch: bool,
 }
 
-pub fn read_config() -> Config {
-    Config::default()
+pub fn read_config() -> Result<Config, serde_yaml::Error> {
+    // Read configuration file
+    let conf: Config = serde_yaml::from_reader(fs::File::open("config.yml").unwrap())?;
+    println!("{:?}", &conf);
+    Ok(conf)
 }
 
 impl Write for Config {
