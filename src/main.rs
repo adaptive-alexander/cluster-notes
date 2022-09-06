@@ -7,26 +7,12 @@ mod parser;
 mod render;
 mod watcher;
 
-fn read_input() -> String {
+pub fn read_input() -> String {
     let mut buffer = String::new();
     std::io::stdin()
         .read_line(&mut buffer)
         .expect("Invalid input");
     buffer.trim().to_string()
-}
-
-fn parse_args(args: Vec<String>) -> config::Config {
-    // Construct Config struct from config.yml
-    let mut conf = config::read_config().unwrap();
-
-    // Check if flag in args
-    if args.contains(&"--watch".to_string()) {
-        conf.watch = true;
-    }
-    if args.contains(&"--display".to_string()) {
-        conf.display = true;
-    }
-    conf
 }
 
 fn run_cli_mode(conf: config::Config) {
@@ -60,7 +46,7 @@ fn run(conf: config::Config) {
 }
 
 fn main() {
-    run(parse_args(
+    run(config::parse_config(
         env::args().skip(1).collect(), // Input arguments
     ))
 }

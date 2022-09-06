@@ -1,6 +1,7 @@
-use crate::config::Config;
-use crate::render;
+use super::read_input;
+use crate::config::{parse_config, read_config, Config};
 use crate::watcher;
+use crate::{config, render};
 use std::fmt;
 use std::fmt::Formatter;
 use std::str::FromStr;
@@ -39,7 +40,18 @@ impl FromStr for Action {
 }
 
 fn setup_configs() {
-    println!("Implement config setup!") // todo!(Alexander)
+    println!("Implement config setup!"); // todo!(Alexander)
+    let mut args: Vec<String> = Vec::new();
+    println!("Enter config to change or \"done\"");
+    loop {
+        let inp = read_input();
+        match inp.as_str() {
+            "done" => break,
+            _ => args.push(inp),
+        }
+    }
+    let conf = parse_config(args);
+    config::write_config(&conf).expect("Failed to write config");
 }
 
 pub fn actions(acts: &Action, conf: &Config) {
